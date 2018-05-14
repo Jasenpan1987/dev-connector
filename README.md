@@ -2,6 +2,7 @@
 
 ```
 module.exports = {
-  mongoURI: "<YOUR_MONGO_CONNECTION_STRING>"
+  mongoURI: "<YOUR_MONGO_CONNECTION_STRING>",
+  jwtSecret: "<ANY_SECRET_KEY_FOR_JWT>"
 }
 ```
