@@ -3,24 +3,28 @@ const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
 const JWT = require("jsonwebtoken");
 const passport = require("passport");
+const validateRegisterInput = require("../../validations/register");
+const validateLoginInput = require("../../validations/login");
 const User = require("../../models/User");
 const keys = require("../../config/keys");
 const router = express.Router();
-// @route GET api/users/test
-// @desc Tests users route
-// @access Public
-router.get("/test", (req, res) => {
-  res.json({ message: "user route works" });
-});
 
 // @route POST api/users/register
 // @desc Register user
 // @access Public
 router.post("/register", (req, res) => {
+  const { errors, isValid } = validateRegisterInput(req.body);
   const { email, password, name } = req.body;
+
+  // server side validation
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email }).then(user => {
     if (user) {
-      return res.status(400).json({ email: "email has been taken" });
+      errors.email = "email has been taken";
+      return res.status(400).json(errors);
     }
     const newUser = new User({
       name,
@@ -49,9 +53,16 @@ router.post("/register", (req, res) => {
 // @access Public
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
+  const { errors, isValid } = validateLoginInput(req.body);
+
+  if (!isValid) {
+    return res.status(400).json(errors);
+  }
+
   User.findOne({ email }).then(user => {
     if (!user) {
-      return res.status(404).json({ email: "user not found" });
+      errors.email = "user not found";
+      return res.status(404).json(errors);
     }
     // check password
     bcrypt.compare(password, user.password).then(isMatch => {
@@ -71,7 +82,8 @@ router.post("/login", (req, res) => {
           }
         );
       } else {
-        return res.status(400).json({ password: "password incorrect" });
+        errors.password = "password incorrect";
+        return res.status(400).json(errors);
       }
     });
   });
