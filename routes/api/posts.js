@@ -111,4 +111,85 @@ router.post(
   }
 );
 
+// @route POST api/posts/like/:post_id
+// @desc Add a like to post
+// @access Private
+router.post(
+  "/like/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+    Post.findById(req.params.post_id)
+      .then(post => {
+        if (!post) {
+          errors.noPostFound = "Post does not exist";
+          return res.status(404).json(errors);
+        }
+
+        if (
+          post.likes.find(like => like.user.toString() === req.user.id) !==
+          undefined
+        ) {
+          errors.alreadyLiked = "You have already liked this post";
+          return res.status(400).json(errors);
+        }
+        post.likes.push({ user: req.user.id });
+        post
+          .save()
+          .then(post => {
+            return res.send(post);
+          })
+          .catch(error => {
+            errors.post = "Something went wrong";
+            return res.status(500).json(errors);
+          });
+      })
+      .catch(error => {
+        errors.post = "Something went wrong";
+        return res.status(500).json(errors);
+      });
+  }
+);
+
+// @route POST api/posts/unlike/:post_id
+// @desc Remove a like to post
+// @access Private
+router.post(
+  "/unlike/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const errors = {};
+    Post.findById(req.params.post_id)
+      .then(post => {
+        if (!post) {
+          errors.noPostFound = "Post does not exist";
+          return res.status(404).json(errors);
+        }
+
+        const targetIdx = post.likes.findIndex(
+          like => like.user.toString() === req.user.id
+        );
+        if (targetIdx === -1) {
+          errors.notLikedYet = "You havn't liked this post";
+          return res.status(400).json(errors);
+        }
+
+        post.likes.splice(targetIdx, 1);
+        post
+          .save()
+          .then(newPost => {
+            return res.json(newPost);
+          })
+          .catch(error => {
+            errors.post = "Something went wrong";
+            return res.status(500).json(errors);
+          });
+      })
+      .catch(error => {
+        errors.post = "Something went wrong";
+        return res.status(500).json(errors);
+      });
+  }
+);
+
 module.exports = router;
