@@ -4,6 +4,7 @@ const passport = require("passport");
 const Post = require("../../models/Post");
 const router = express.Router();
 const validatePostInput = require("../../validations/post");
+const validateCommentInput = require("../../validations/comment");
 
 // @route GET api/posts
 // @desc Get all posts
@@ -26,7 +27,7 @@ router.get("/", (req, res) => {
 // @access Public
 router.get("/:post_id", (req, res) => {
   const errors = {};
-  Post.findOne({ _id: req.params.post_id })
+  Post.findById(req.params.post_id)
     .then(post => {
       if (!post) {
         errors.noPostFound = "Can not find this post";
@@ -62,15 +63,9 @@ router.delete(
           return res.status(401).json(errors);
         }
 
-        post
-          .remove()
-          .then(() => {
-            return res.json({ success: true });
-          })
-          .catch(error => {
-            errors.post = "Something went wrong";
-            return res.status(500).json(errors);
-          });
+        post.remove().then(() => {
+          return res.json({ success: true });
+        });
       })
       .catch(error => {
         errors.post = "Something went wrong";
@@ -134,15 +129,9 @@ router.post(
           return res.status(400).json(errors);
         }
         post.likes.push({ user: req.user.id });
-        post
-          .save()
-          .then(post => {
-            return res.send(post);
-          })
-          .catch(error => {
-            errors.post = "Something went wrong";
-            return res.status(500).json(errors);
-          });
+        post.save().then(post => {
+          return res.send(post);
+        });
       })
       .catch(error => {
         errors.post = "Something went wrong";
@@ -175,15 +164,9 @@ router.post(
         }
 
         post.likes.splice(targetIdx, 1);
-        post
-          .save()
-          .then(newPost => {
-            return res.json(newPost);
-          })
-          .catch(error => {
-            errors.post = "Something went wrong";
-            return res.status(500).json(errors);
-          });
+        post.save().then(newPost => {
+          return res.json(newPost);
+        });
       })
       .catch(error => {
         errors.post = "Something went wrong";
@@ -192,4 +175,91 @@ router.post(
   }
 );
 
+// @route POST api/posts/comment/:post_id
+// @desc Add a comment to post
+// @access Private
+router.post(
+  "/comment/:post_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const {
+      user,
+      params: { post_id },
+      body
+    } = req;
+    const { isValid, errors } = validateCommentInput(body);
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const { text, name, avatar } = body;
+    Post.findById(post_id)
+      .then(post => {
+        const newComment = {
+          text,
+          name,
+          avatar,
+          user: user.id
+        };
+
+        post.comments.unshift(newComment);
+        post.save().then(post => {
+          return res.json(post);
+        });
+      })
+      .catch(error => {
+        errors.post = "Something went wrong";
+        return res.status(500).json(errors);
+      });
+  }
+);
+
+// @route DELETE api/posts/comment/:post_id/:comment_id
+// @desc Delete a comment based on post_id and comment_id
+// @access Private
+router.delete(
+  "/comment/:post_id/:comment_id",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    const {
+      user,
+      params: { post_id, comment_id }
+    } = req;
+    const errors = {};
+    Post.findById(post_id)
+      .then(post => {
+        if (!post) {
+          errors.noPostFound = "Post does not exist";
+          return res.status(404).json(errors);
+        }
+
+        const targetIdx = post.comments.findIndex(
+          comment => comment._id.toString() === comment_id
+        );
+
+        if (targetIdx === -1) {
+          errors.noCommentFound = "Comment does not exist";
+          return res.status(404).json(errors);
+        }
+
+        if (
+          user.id !== post.comments[targetIdx].user.toString() &&
+          user.id !== post.user.toString()
+        ) {
+          errors.notAuthorized = "Cannot delete someone else's comment.";
+          return res.status(401).json(errors);
+        }
+
+        post.comments.splice(targetIdx, 1);
+        post.save().then(newPost => {
+          res.json(newPost);
+        });
+      })
+      .catch(error => {
+        console.log("333", error);
+        errors.post = "Something went wrong";
+        return res.status(500).json(errors);
+      });
+  }
+);
 module.exports = router;
