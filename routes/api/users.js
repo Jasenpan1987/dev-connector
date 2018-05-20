@@ -1,12 +1,9 @@
 const express = require("express");
-const gravatar = require("gravatar");
-const bcrypt = require("bcryptjs");
-const JWT = require("jsonwebtoken");
-const passport = require("passport");
+const requireLogin = require("../../passport/require-login");
+const { signJWT } = require("../../helpers");
 const validateRegisterInput = require("../../validations/register");
 const validateLoginInput = require("../../validations/login");
 const User = require("../../models/User");
-const keys = require("../../config/keys");
 const router = express.Router();
 
 // @route POST api/users/register
@@ -26,25 +23,17 @@ router.post("/register", (req, res) => {
       errors.email = "email has been taken";
       return res.status(400).json(errors);
     }
+
     const newUser = new User({
       name,
       email,
-      password,
-      avatar: gravatar.url(email, { s: "200", r: "pg", d: "mm" })
+      password
     });
 
-    bcrypt.genSalt(10, (err, salt) => {
-      bcrypt.hash(newUser.password, salt, (error, hashedPassword) => {
-        if (error) {
-          throw error;
-        }
-        newUser.password = hashedPassword;
-        newUser
-          .save()
-          .then(user => res.json(user))
-          .catch(error => console.log(error));
-      });
-    });
+    newUser
+      .save()
+      .then(user => res.json(user))
+      .catch(error => console.log(error));
   });
 });
 
@@ -65,7 +54,7 @@ router.post("/login", (req, res) => {
       return res.status(404).json(errors);
     }
     // check password
-    bcrypt.compare(password, user.password).then(isMatch => {
+    user.comparePassword(password).then(isMatch => {
       if (isMatch) {
         const payload = {
           id: user.id,
@@ -73,14 +62,9 @@ router.post("/login", (req, res) => {
           avatar: user.avatar
         };
 
-        JWT.sign(
-          payload, // payload that can include any information
-          keys.jwtSecret, // any string can be the key
-          { expiresIn: 3600 }, // expires in seconds
-          (error, token) => {
-            return res.json({ success: true, token: `Bearer ${token}` });
-          }
-        );
+        signJWT(payload).then(token => {
+          return res.json({ success: true, token });
+        });
       } else {
         errors.password = "password incorrect";
         return res.status(400).json(errors);
@@ -92,17 +76,13 @@ router.post("/login", (req, res) => {
 // @route POST api/users/current
 // @desc Returns the current user
 // @access Private
-router.get(
-  "/current",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    const { name, email, id } = req.user;
-    res.json({
-      id,
-      name,
-      email
-    });
-  }
-);
+router.get("/current", requireLogin(), (req, res) => {
+  const { name, email, id } = req.user;
+  res.json({
+    id,
+    name,
+    email
+  });
+});
 
 module.exports = router;
