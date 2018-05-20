@@ -256,7 +256,6 @@ router.delete(
         });
       })
       .catch(error => {
-        console.log("333", error);
         errors.post = "Something went wrong";
         return res.status(500).json(errors);
       });

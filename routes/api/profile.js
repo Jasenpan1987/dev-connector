@@ -220,7 +220,6 @@ router.post(
       current,
       description
     };
-    console.log("newExperience:: ", newExperience);
 
     const { errors, isValid } = validateExperienceInput(newExperience);
     if (!isValid) {

@@ -1,40 +1,25 @@
 const express = require("express");
+const _ = require("lodash");
 const requireLogin = require("../../passport/require-login");
-const { signJWT } = require("../../helpers");
-const validateRegisterInput = require("../../validations/register");
-const validateLoginInput = require("../../validations/login");
-const User = require("../../models/User");
+const UserService = require("../../services/user-service");
+const userService = new UserService();
 const router = express.Router();
 
 // @route POST api/users/register
 // @desc Register user
 // @access Public
 router.post("/register", (req, res) => {
-  const { errors, isValid } = validateRegisterInput(req.body);
   const { email, password, name } = req.body;
+  const errors = userService.checkRegisterInvalid(req.body);
 
-  // server side validation
-  if (!isValid) {
+  if (!_.isEmpty(errors)) {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ email }).then(user => {
-    if (user) {
-      errors.email = "email has been taken";
-      return res.status(400).json(errors);
-    }
-
-    const newUser = new User({
-      name,
-      email,
-      password
-    });
-
-    newUser
-      .save()
-      .then(user => res.json(user))
-      .catch(error => console.log(error));
-  });
+  userService
+    .registerUser(email, password, name)
+    .then(user => res.json(user))
+    .catch(errors => res.status(500).json(errors));
 });
 
 // @route GET api/users/login
@@ -42,35 +27,16 @@ router.post("/register", (req, res) => {
 // @access Public
 router.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const { errors, isValid } = validateLoginInput(req.body);
+  const errors = userService.checkLoginInvalid(req.body);
 
-  if (!isValid) {
+  if (!_.isEmpty(errors)) {
     return res.status(400).json(errors);
   }
 
-  User.findOne({ email }).then(user => {
-    if (!user) {
-      errors.email = "user not found";
-      return res.status(404).json(errors);
-    }
-    // check password
-    user.comparePassword(password).then(isMatch => {
-      if (isMatch) {
-        const payload = {
-          id: user.id,
-          name: user.name,
-          avatar: user.avatar
-        };
-
-        signJWT(payload).then(token => {
-          return res.json({ success: true, token });
-        });
-      } else {
-        errors.password = "password incorrect";
-        return res.status(400).json(errors);
-      }
-    });
-  });
+  userService
+    .loginUser(email, password)
+    .then(token => res.json({ success: true, token }))
+    .catch(errors => res.status(errors.code || 500).json(errors));
 });
 
 // @route POST api/users/current
