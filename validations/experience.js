@@ -1,11 +1,11 @@
 const validator = require("validator");
-const isEmpty = require("./is-empty");
+const _ = require("lodash");
 
 module.exports = function validateExperience(data) {
   const errors = {};
-  data.title = isEmpty(data.title) ? "" : data.title;
-  data.company = isEmpty(data.company) ? "" : data.company;
-  data.from = isEmpty(data.from) ? "" : data.from;
+  data.title = _.isEmpty(data.title) ? "" : data.title;
+  data.company = _.isEmpty(data.company) ? "" : data.company;
+  data.from = _.isEmpty(data.from) ? "" : data.from;
 
   if (validator.isEmpty(data.title)) {
     errors.title = "Job title is required";
@@ -21,6 +21,6 @@ module.exports = function validateExperience(data) {
 
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: _.isEmpty(errors)
   };
 };

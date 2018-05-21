@@ -19,7 +19,7 @@ router.post("/register", (req, res) => {
   userService
     .registerUser(email, password, name)
     .then(user => res.json(user))
-    .catch(errors => res.status(500).json(errors));
+    .catch(errors => res.status(errors.code || 500).json(errors));
 });
 
 // @route GET api/users/login

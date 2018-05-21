@@ -1,9 +1,9 @@
 const validator = require("validator");
-const isEmpty = require("./is-empty");
+const _ = require("lodash");
 
 module.exports = function validateCommentInput(data) {
   const errors = {};
-  data.text = isEmpty(data.text) ? "" : data.text;
+  data.text = _.isEmpty(data.text) ? "" : data.text;
 
   if (!validator.isLength(data.text, { min: 10, max: 200 })) {
     errors.post = "Comment must between 10 to 200 characters";
@@ -15,6 +15,6 @@ module.exports = function validateCommentInput(data) {
 
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: _.isEmpty(errors)
   };
 };
