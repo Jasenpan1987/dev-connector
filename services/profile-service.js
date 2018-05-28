@@ -18,10 +18,16 @@ const User = require("../models/User");
 //       return res.status(404).json(error);
 //     });
 class ProfileService {
-  getUserProfile({ userId, handle }) {
-    const query = userId
-      ? Profile.findOne({ user: userId })
-      : Profile.findOne({ handle });
+  getUserProfile({ userId, handle, all }) {
+    let query;
+    if (userId) {
+      query = Profile.findOne({ user: userId });
+    } else if (handle) {
+      query = Profile.findOne({ handle });
+    } else if (all) {
+      query = Profile.find();
+    }
+
     return query
       .populate("user", ["name", "avatar"])
       .exec()
@@ -89,11 +95,10 @@ class ProfileService {
       "linkedin",
       "instagram"
     ]);
-    console.log(fields);
+
     return Profile.findOne({ user: userId }).then(profile => {
       if (profile) {
         // updating existing profile
-
         return Profile.findOneAndUpdate(
           { user: userId },
           { $set: fields },
@@ -116,6 +121,10 @@ class ProfileService {
         });
       });
     });
+  }
+
+  addPropertyToProfile(userId, propertyName, propertyObject) {
+    return Profile.findOne({ user: user.id }).then(profile => {});
   }
 }
 

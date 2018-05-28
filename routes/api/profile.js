@@ -65,21 +65,10 @@ router.get("/user/:user_id", (req, res) => {
 // @desc Get all profile by handle
 // @access public
 router.get("/all", (req, res) => {
-  const errors = {};
-  Profile.find()
-    .populate("user", ["name", "avatar"])
-    .then(profiles => {
-      if (!profiles || profiles.length === 0) {
-        errors.noProfile = "there is no profile for this user";
-        return res.status(404).json(errors);
-      }
-
-      return res.json(profiles);
-    })
-    .catch(error => {
-      errors.serverError = "Something went wrong";
-      return res.status(500).json(errors);
-    });
+  profileService
+    .getUserProfile({ all: true })
+    .then(profile => res.json(profile))
+    .catch(errors => res.status(errors.code || 500).json(errors));
 });
 
 // @route POST api/experience
