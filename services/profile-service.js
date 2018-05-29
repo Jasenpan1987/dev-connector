@@ -5,18 +5,6 @@ const validateEducationInput = require("../validations/education");
 const Profile = require("../models/Profile");
 const User = require("../models/User");
 
-// Profile.findOne({ user: user.id })
-//     .populate("user", ["name", "avatar"])
-//     .then(profile => {
-//       if (!profile) {
-//         errors.noProfile = "There is no profile for this user";
-//         return res.status(404).json(errors);
-//       }
-//       return res.json(profile);
-//     })
-//     .catch(error => {
-//       return res.status(404).json(error);
-//     });
 class ProfileService {
   getUserProfile({ userId, handle, all }) {
     let query;
