@@ -30,15 +30,20 @@ router.get("/", requireLogin(), (req, res) => {
 // @access Private
 router.post("/", requireLogin(), (req, res) => {
   const { user, body } = req;
-
   const { errors, isValid } = validateProfileInput(body);
+
   if (!isValid) {
     return res.status(400).json(errors);
   }
   profileService
     .createProfile(user.id, body)
-    .then(profile => res.json(profile))
-    .catch(errors => res.status(errors.code || 500).json(errors));
+    .then(profile => {
+      res.json(profile);
+    })
+    .catch(errors => {
+      console.log("errors:::: ", errors);
+      res.status(errors.code || 500).json(errors);
+    });
 });
 
 // @route GET api/profile/handle/:handle

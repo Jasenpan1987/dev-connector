@@ -83,7 +83,6 @@ class ProfileService {
       "linkedin",
       "instagram"
     ]);
-
     return Profile.findOne({ user: userId }).then(profile => {
       if (profile) {
         // updating existing profile
@@ -91,23 +90,32 @@ class ProfileService {
           { user: userId },
           { $set: fields },
           { new: true }
-        ).then(updatedProfile => {
-          return updatedProfile;
-        });
-      }
-      return Profile.findOne({ handle: profileFields.handle }).then(profile => {
-        if (profile) {
-          return new Promise((resolve, reject) => {
-            reject({
-              handle: "This handle has already exist",
-              code: 400
-            });
+        )
+          .then(updatedProfile => {
+            return updatedProfile;
+          })
+          .catch(error => {
+            console.log("profile create err:: ", error);
           });
-        }
-        return new Profile(fields).save().then(savedProfile => {
-          return res.json(savedProfile);
+      }
+      return Profile.findOne({ handle: fields.handle })
+        .then(profile => {
+          if (profile) {
+            return new Promise((resolve, reject) => {
+              reject({
+                handle: "This handle has already exist",
+                code: 400
+              });
+            });
+          }
+
+          return new Profile(fields).save().then(savedProfile => {
+            return savedProfile;
+          });
+        })
+        .catch(error => {
+          console.log("savedProfile:: ", savedProfile);
         });
-      });
     });
   }
 

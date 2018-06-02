@@ -4,7 +4,6 @@ import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
 import { getCurrentProfile } from "../../actions/profile-actions";
 import { Spiner } from "../common/Spinner";
-import _ from "lodash";
 
 class DashboardComponent extends Component {
   componentDidMount() {
