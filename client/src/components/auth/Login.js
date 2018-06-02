@@ -1,11 +1,10 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import classnames from "classnames";
 import { connect } from "react-redux";
 import { loginUser } from "../../actions/auth-actions";
 import { TextFieldGroup } from "../common/TextFieldGroup";
 
-class Login extends Component {
+class LoginComponent extends Component {
   state = {
     email: "",
     password: "",
@@ -17,6 +16,7 @@ class Login extends Component {
       this.props.history.push("/dashboard");
     }
   }
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({
@@ -86,7 +86,7 @@ class Login extends Component {
   }
 }
 
-Login.propTypes = {
+LoginComponent.propTypes = {
   loginUser: PropTypes.func.isRequired,
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired
@@ -97,4 +97,4 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export default connect(mapStateToProps, { loginUser })(Login);
+export const Login = connect(mapStateToProps, { loginUser })(LoginComponent);

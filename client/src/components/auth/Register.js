@@ -3,11 +3,10 @@ import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
 import { withRouter } from "react-router-dom";
-import classnames from "classnames";
 import { registerUser } from "../../actions/auth-actions";
 import { TextFieldGroup } from "../common/TextFieldGroup";
 
-class Register extends Component {
+class RegisterComponent extends Component {
   state = {
     name: "",
     email: "",
@@ -121,13 +120,13 @@ const mapDispatchToProps = dispatch => ({
   registerUser: bindActionCreators(registerUser, dispatch)
 });
 
-Register.propTypes = {
+RegisterComponent.propTypes = {
   auth: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
   registerUser: PropTypes.func.isRequired,
   history: PropTypes.object.isRequired
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(
-  withRouter(Register)
+export const Register = connect(mapStateToProps, mapDispatchToProps)(
+  withRouter(RegisterComponent)
 );
