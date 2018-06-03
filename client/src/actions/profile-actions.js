@@ -60,12 +60,42 @@ export const addExperience = (experience, history) => async dispatch => {
   }
 };
 
+export const deleteExperience = expId => async dispatch => {
+  try {
+    const response = await axios.delete(`/api/profile/experience/${expId}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: response.data
+    });
+  } catch (error) {
+    return dispatch({
+      type: GET_ERRORS,
+      payload: error.response.data
+    });
+  }
+};
+
 export const addEducation = (education, history) => async dispatch => {
   try {
     const response = await axios.post("/api/profile/education", education);
     if (response) {
       history.push("/dashboard");
     }
+  } catch (error) {
+    return dispatch({
+      type: GET_ERRORS,
+      payload: error.response.data
+    });
+  }
+};
+
+export const deleteEducation = eduId => async dispatch => {
+  try {
+    const response = await axios.delete(`/api/profile/education/${eduId}`);
+    dispatch({
+      type: GET_PROFILE,
+      payload: response.data
+    });
   } catch (error) {
     return dispatch({
       type: GET_ERRORS,

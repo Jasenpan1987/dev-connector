@@ -8,6 +8,8 @@ import {
 } from "../../actions/profile-actions";
 import { Spiner } from "../common/Spinner";
 import { ProfileActions } from "./ProfileActions";
+import { Experience } from "./Experience";
+import { Education } from "./Education";
 
 class DashboardComponent extends Component {
   componentDidMount() {
@@ -33,6 +35,8 @@ class DashboardComponent extends Component {
               Welcome <Link to={`/profile/${profile.handle}`}>{user.name}</Link>
             </p>
             <ProfileActions />
+            <Experience experience={profile.experience} />
+            <Education education={profile.education} />
             <div style={{ marginBottom: 60 }} />
             <button className="btn btn-danger" onClick={this.handleClick}>
               Delete My Account
