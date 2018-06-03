@@ -18,6 +18,7 @@ import { AddExperience } from "./components/add-details/AddExperience";
 import { AddEducation } from "./components/add-details/AddEducation";
 import { Profiles } from "./components/profiles/Profiles";
 import { Login } from "./components/auth/Login";
+import { Profile } from "./components/profile/Profile";
 // import
 import "./App.css";
 
@@ -49,6 +50,7 @@ class App extends Component {
               <Route exact path="/register" component={Register} />
               <Route exact path="/login" component={Login} />
               <Route exact path="/profiles" component={Profiles} />
+              <Route exact path="/profile/:handle" component={Profile} />
               <Switch>
                 <PrivateRoute exact path="/dashboard" component={Dashboard} />
               </Switch>
