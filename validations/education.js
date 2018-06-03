@@ -26,6 +26,6 @@ module.exports = function validateEducation(data) {
 
   return {
     errors,
-    isValid: isEmpty(errors)
+    isValid: _.isEmpty(errors)
   };
 };

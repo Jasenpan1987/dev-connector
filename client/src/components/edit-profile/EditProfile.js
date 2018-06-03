@@ -1,12 +1,16 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
+import _ from "lodash";
 import { withRouter } from "react-router-dom";
 import { TextFieldGroup } from "../common/TextFieldGroup";
 import { TextAreaFieldGroup } from "../common/TextAreaFieldGroup";
 import { SelectListGroup } from "../common/SelectListGroup";
 import { InputGroup } from "../common/InputGroup";
-import { createProfile } from "../../actions/profile-actions";
+import {
+  createProfile,
+  getCurrentProfile
+} from "../../actions/profile-actions";
 
 const statusOptions = [
   { label: "* Select professional status", value: 0 },
@@ -21,7 +25,7 @@ const statusOptions = [
   { label: "Others", value: "Others" }
 ];
 
-class CreateProfileComponent extends Component {
+class EditProfileComponent extends Component {
   state = {
     displaySocialInputs: false,
     handle: "",
@@ -40,6 +44,9 @@ class CreateProfileComponent extends Component {
     errors: {}
   };
 
+  componentDidMount() {
+    this.props.getCurrentProfile();
+  }
   componentWillReceiveProps(nextProps) {
     if (nextProps.errors) {
       this.setState({
@@ -49,6 +56,52 @@ class CreateProfileComponent extends Component {
 
     if (nextProps.auth && nextProps.auth.isAuthenticated) {
       this.props.history.push("dashboard");
+    }
+
+    if (nextProps.profile.profile) {
+      const profile = nextProps.profile.profile;
+      const skillsCSV = profile.skills.join(",");
+
+      profile.company = !_.isEmpty(profile.company) ? profile.company : "";
+      profile.website = !_.isEmpty(profile.website) ? profile.website : "";
+      profile.location = !_.isEmpty(profile.location) ? profile.location : "";
+      profile.status = !_.isEmpty(profile.status) ? profile.status : "";
+      profile.githubusername = !_.isEmpty(profile.githubusername)
+        ? profile.githubusername
+        : "";
+      profile.bio = !_.isEmpty(profile.bio) ? profile.bio : "";
+      profile.social = !_.isEmpty(profile.social) ? profile.social : {};
+      profile.twitter = !_.isEmpty(profile.social.twitter)
+        ? profile.social.twitter
+        : "";
+      profile.facebook = !_.isEmpty(profile.social.facebook)
+        ? profile.social.facebook
+        : "";
+      profile.youtube = !_.isEmpty(profile.social.youtube)
+        ? profile.social.youtube
+        : "";
+      profile.linkedin = !_.isEmpty(profile.social.linkedin)
+        ? profile.social.linkedin
+        : "";
+      profile.instagram = !_.isEmpty(profile.social.instagram)
+        ? profile.social.instagram
+        : "";
+
+      this.setState({
+        handle: profile.handle,
+        company: profile.company,
+        website: profile.website,
+        location: profile.location,
+        status: profile.status,
+        skills: skillsCSV,
+        githubusername: profile.githubusername,
+        bio: profile.bio,
+        twitter: profile.twitter,
+        facebook: profile.facebook,
+        linkedin: profile.linkedin,
+        youtube: profile.youtube,
+        instagram: profile.instagram
+      });
     }
   }
 
@@ -147,16 +200,14 @@ class CreateProfileComponent extends Component {
 
   render() {
     const { errors } = this.state;
-    console.log(this.props);
+
     return (
       <div className="create-profile">
         <div className="container">
           <div className="row">
             <div className="col-md-8 m-auto">
-              <h1 className="display-4 text-center">Create Your Profile</h1>
-              <p className="lead text-center">
-                Let's get some infomation to get your profile to standout
-              </p>
+              <h1 className="display-4 text-center">Edit Your Profile</h1>
+
               <small className="d-block pb-3">* = required fields</small>
               <form onSubmit={this.handleSubmit}>
                 <TextFieldGroup
@@ -257,12 +308,14 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-CreateProfileComponent.propTypes = {
+EditProfileComponent.propTypes = {
   profile: PropTypes.object.isRequired,
   errors: PropTypes.object.isRequired,
-  createProfile: PropTypes.func.isRequired
+  createProfile: PropTypes.func.isRequired,
+  getCurrentProfile: PropTypes.func.isRequired
 };
 
-export const CreateProfile = connect(mapStateToProps, { createProfile })(
-  withRouter(CreateProfileComponent)
-);
+export const EditProfile = connect(mapStateToProps, {
+  createProfile,
+  getCurrentProfile
+})(withRouter(EditProfileComponent));

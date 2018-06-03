@@ -4,7 +4,8 @@ import {
   PROFILE_LOADING,
   GET_ERRORS,
   CLEAR_CURRENT_PROFILE,
-  CREATE_PROFILE
+  CREATE_PROFILE,
+  SET_CURRENT_USER
 } from "./types";
 
 export const getCurrentProfile = () => async dispatch => {
@@ -42,5 +43,50 @@ export const createProfile = (profile, history) => async dispatch => {
       type: GET_ERRORS,
       payload: error.response.data
     });
+  }
+};
+
+export const addExperience = (experience, history) => async dispatch => {
+  try {
+    const response = await axios.post("/api/profile/experience", experience);
+    if (response) {
+      history.push("/dashboard");
+    }
+  } catch (error) {
+    return dispatch({
+      type: GET_ERRORS,
+      payload: error.response.data
+    });
+  }
+};
+
+export const addEducation = (education, history) => async dispatch => {
+  try {
+    const response = await axios.post("/api/profile/education", education);
+    if (response) {
+      history.push("/dashboard");
+    }
+  } catch (error) {
+    return dispatch({
+      type: GET_ERRORS,
+      payload: error.response.data
+    });
+  }
+};
+
+export const deleteAccount = () => async dispatch => {
+  if (window.confirm("Are you sure? This cannot undone.")) {
+    try {
+      const response = await axios.delete("/api/profile");
+      dispatch({
+        type: SET_CURRENT_USER,
+        payload: {}
+      });
+    } catch (error) {
+      dispatch({
+        type: GET_ERRORS,
+        payload: error.response.data
+      });
+    }
   }
 };
