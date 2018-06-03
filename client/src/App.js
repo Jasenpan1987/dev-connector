@@ -19,7 +19,7 @@ import { AddEducation } from "./components/add-details/AddEducation";
 import { Profiles } from "./components/profiles/Profiles";
 import { Login } from "./components/auth/Login";
 import { Profile } from "./components/profile/Profile";
-// import
+import { NotFound } from "./components/not-found/NotFound";
 import "./App.css";
 
 const token = localStorage.getItem("jwtToken");
@@ -82,6 +82,7 @@ class App extends Component {
                   component={AddEducation}
                 />
               </Switch>
+              <Route exact path="/notfound" component={NotFound} />
             </div>
             <Footer />
           </div>

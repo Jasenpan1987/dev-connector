@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import Moment from "react-moment";
-import _ from "lodash";
 
 class ProfileDetails extends Component {
   renderExperience = () => {

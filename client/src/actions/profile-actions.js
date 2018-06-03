@@ -4,7 +4,6 @@ import {
   PROFILE_LOADING,
   GET_ERRORS,
   CLEAR_CURRENT_PROFILE,
-  CREATE_PROFILE,
   SET_CURRENT_USER,
   GET_PROFILES
 } from "./types";
@@ -36,7 +35,7 @@ export const getProfileByHandle = handle => async dispatch => {
   } catch (errors) {
     dispatch({
       type: GET_PROFILE,
-      payload: {}
+      payload: null
     });
   }
 };
@@ -140,7 +139,7 @@ export const getProfiles = () => async dispatch => {
 export const deleteAccount = () => async dispatch => {
   if (window.confirm("Are you sure? This cannot undone.")) {
     try {
-      const response = await axios.delete("/api/profile");
+      await axios.delete("/api/profile");
       dispatch({
         type: SET_CURRENT_USER,
         payload: {}
