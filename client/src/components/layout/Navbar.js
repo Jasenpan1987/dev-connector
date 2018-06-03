@@ -44,7 +44,7 @@ class NavbarComponent extends Component {
       <ul className="navbar-nav ml-auto">
         <li className="nav-item">
           <Link className="nav-link" to="/register">
-            Dashboard
+            Signup
           </Link>
         </li>
         <li className="nav-item">

@@ -5,7 +5,8 @@ import {
   GET_ERRORS,
   CLEAR_CURRENT_PROFILE,
   CREATE_PROFILE,
-  SET_CURRENT_USER
+  SET_CURRENT_USER,
+  GET_PROFILES
 } from "./types";
 
 export const getCurrentProfile = () => async dispatch => {
@@ -100,6 +101,22 @@ export const deleteEducation = eduId => async dispatch => {
     return dispatch({
       type: GET_ERRORS,
       payload: error.response.data
+    });
+  }
+};
+
+export const getProfiles = () => async dispatch => {
+  dispatch(setProfileLoading());
+  try {
+    const result = await axios.get("/api/profile/all");
+    dispatch({
+      type: GET_PROFILES,
+      payload: result.data
+    });
+  } catch (errors) {
+    dispatch({
+      type: GET_PROFILES,
+      payload: null
     });
   }
 };
