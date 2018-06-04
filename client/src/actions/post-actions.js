@@ -58,3 +58,31 @@ export const deletePost = postId => async dispatch => {
     });
   }
 };
+
+export const addLike = postId => async dispatch => {
+  try {
+    const response = await axios.post(`/api/posts/like/${postId}`);
+    if (response) {
+      dispatch(getPosts());
+    }
+  } catch (errors) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: errors
+    });
+  }
+};
+
+export const removeLike = postId => async dispatch => {
+  try {
+    const response = await axios.post(`/api/posts/unlike/${postId}`);
+    if (response) {
+      dispatch(getPosts());
+    }
+  } catch (errors) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: errors
+    });
+  }
+};
