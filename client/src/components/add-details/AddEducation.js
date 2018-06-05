@@ -48,7 +48,6 @@ export default class AddEducationComponent extends Component {
       current: this.state.current,
       description: this.state.description
     };
-    // console.log(education);
     this.props.addEducation(education, this.props.history);
   };
 
@@ -172,6 +171,7 @@ const mapStateToProps = state => ({
   errors: state.errors
 });
 
-export const AddEducation = connect(mapStateToProps, { addEducation })(
-  withRouter(AddEducationComponent)
-);
+export const AddEducation = connect(
+  mapStateToProps,
+  { addEducation }
+)(withRouter(AddEducationComponent));

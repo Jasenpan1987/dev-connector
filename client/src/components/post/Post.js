@@ -5,6 +5,8 @@ import { getPost } from "../../actions/post-actions";
 import { Link } from "react-router-dom";
 import { PostItem } from "../posts/PostItem";
 import { Spiner } from "../common/Spinner";
+import { CommentForm } from "./CommentForm";
+import { CommentFeed } from "./CommentFeed";
 
 export default class PostComponent extends Component {
   componentDidMount() {
@@ -22,6 +24,8 @@ export default class PostComponent extends Component {
     return (
       <div>
         <PostItem post={post} showActions={false} />
+        <CommentForm postId={post._id} />
+        <CommentFeed postId={post._id} comments={post.comments} />
       </div>
     );
   };

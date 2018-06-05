@@ -41,7 +41,6 @@ router.post("/", requireLogin(), (req, res) => {
       res.json(profile);
     })
     .catch(errors => {
-      console.log("errors:::: ", errors);
       res.status(errors.code || 500).json(errors);
     });
 });

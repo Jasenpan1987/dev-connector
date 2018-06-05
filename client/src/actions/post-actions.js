@@ -104,3 +104,31 @@ export const getPost = postId => async dispatch => {
     });
   }
 };
+
+export const addComment = (postId, comment) => async dispatch => {
+  try {
+    const response = await axios.post(`/api/posts/comment/${postId}`, comment);
+    dispatch(getPost(postId));
+  } catch (error) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: error.response.data
+    });
+  }
+};
+
+export const deleteComment = (postId, commentId) => async dispatch => {
+  try {
+    const response = await axios.delete(
+      `/api/posts/comment/${postId}/${commentId}`
+    );
+    if (response) {
+      dispatch(getPost(postId));
+    }
+  } catch (error) {
+    dispatch({
+      type: GET_ERRORS,
+      payload: error.response.data
+    });
+  }
+};

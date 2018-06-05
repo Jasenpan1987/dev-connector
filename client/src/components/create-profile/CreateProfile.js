@@ -147,7 +147,6 @@ class CreateProfileComponent extends Component {
 
   render() {
     const { errors } = this.state;
-    console.log(this.props);
     return (
       <div className="create-profile">
         <div className="container">
@@ -263,6 +262,7 @@ CreateProfileComponent.propTypes = {
   createProfile: PropTypes.func.isRequired
 };
 
-export const CreateProfile = connect(mapStateToProps, { createProfile })(
-  withRouter(CreateProfileComponent)
-);
+export const CreateProfile = connect(
+  mapStateToProps,
+  { createProfile }
+)(withRouter(CreateProfileComponent));
