@@ -21,6 +21,7 @@ import { Login } from "./components/auth/Login";
 import { Profile } from "./components/profile/Profile";
 import { NotFound } from "./components/not-found/NotFound";
 import { Posts } from "./components/posts/Posts";
+import { Post } from "./components/post/Post";
 import "./App.css";
 
 const token = localStorage.getItem("jwtToken");
@@ -85,6 +86,9 @@ class App extends Component {
               </Switch>
               <Switch>
                 <PrivateRoute exact path="/feed" component={Posts} />
+              </Switch>
+              <Switch>
+                <PrivateRoute exact path="/post/:postId" component={Post} />
               </Switch>
               <Route exact path="/notfound" component={NotFound} />
             </div>

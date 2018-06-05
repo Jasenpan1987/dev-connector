@@ -1,6 +1,7 @@
 import {
   ADD_POST,
   GET_POSTS,
+  GET_POST,
   POST_LOADING,
   DELETE_POST
 } from "../actions/types";
@@ -40,6 +41,13 @@ export const postReducer = (state = initState, action) => {
       };
     }
 
+    case GET_POST: {
+      return {
+        ...state,
+        post: action.payload,
+        loading: false
+      };
+    }
     default: {
       return state;
     }
